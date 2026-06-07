@@ -1,22 +1,40 @@
 // --- GLOBAL CORE STORAGE CATALOG ---
 window.SEARCH_INVENTORY = [
-    { id: 1, name: "AeroPulse Sports Sneakers", price: 8500, img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60" },
-    { id: 2, name: "Minimalist Retro Camera", price: 45000, img: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500&auto=format&fit=crop&q=60" },
-    { id: 3, name: "Urban Obsidian Sunglasses", price: 3200, img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&auto=format&fit=crop&q=60" },
-    { id: 4, name: "Alpha Stealth Mechanical Keyboard", price: 12500, img: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&auto=format&fit=crop&q=60" },
-    { id: 5, name: "Vanguard Leather Boots", price: 14000, img: "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=500&auto=format&fit=crop&q=60" }
+    { id: 1, name: "AeroPulse Sports Sneakers", price: 8500, img: "https://picsum.photos/id/1/500/500" },
+    { id: 2, name: "Minimalist Retro Camera", price: 45000, img: "https://picsum.photos/id/160/500/500" },
+    { id: 3, name: "Urban Obsidian Sunglasses", price: 3200, img: "https://picsum.photos/id/121/500/500" },
+    { id: 4, name: "Alpha Stealth Mechanical Keyboard", price: 12500, img: "https://picsum.photos/id/366/500/500" },
+    { id: 5, name: "Vanguard Leather Boots", price: 14000, img: "https://picsum.photos/id/102/500/500" },
+    { id: 6, name: "Precision Titanium Watch", price: 28000, img: "https://picsum.photos/id/175/500/500" },
+    { id: 7, name: "Sonic Wave Headphones", price: 9500, img: "https://picsum.photos/id/367/500/500" },
+    { id: 8, name: "Tactical Cargo Jacket", price: 18000, img: "https://picsum.photos/id/429/500/500" },
+    { id: 9, name: "Executive Leather Briefcase", price: 22000, img: "https://picsum.photos/id/425/500/500" },
+    { id: 10, name: "Ergonomic Office Chair", price: 35000, img: "https://picsum.photos/id/491/500/500" },
+    { id: 11, name: "Smart Home Hub Controller", price: 15000, img: "https://picsum.photos/id/555/500/500" },
+    { id: 12, name: "Premium Fountain Pen", price: 7500, img: "https://picsum.photos/id/506/500/500" },
+    { id: 13, name: "Studio Condenser Microphone", price: 19000, img: "https://picsum.photos/id/559/500/500" },
+    { id: 14, name: "Gravel Trail Running Shoe", price: 11000, img: "https://picsum.photos/id/431/500/500" },
+    { id: 15, name: "Portable Power Bank 20k", price: 4500, img: "https://picsum.photos/id/570/500/500" },
+    { id: 16, name: "Wireless Charging Pad", price: 2500, img: "https://picsum.photos/id/575/500/500" }
 ];
 
-// --- VIRTUAL MERCHANTS DYNAMIC PIPELINE SYNC ---
-function syncCustomInventory() {
-    const customProducts = JSON.parse(localStorage.getItem('aion_custom_products')) || [];
-    customProducts.forEach(prod => {
-        if (!window.SEARCH_INVENTORY.some(item => item.id === prod.id)) {
-            window.SEARCH_INVENTORY.push(prod);
-        }
+function populateMainProductGrid() {
+    const grid = document.getElementById('product-grid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    window.SEARCH_INVENTORY.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+            <img src="${item.img}" alt="${item.name}">
+            <h3>${item.name}</h3>
+            <p>Rs. ${item.price.toLocaleString()}</p>
+            <a href="product.html?id=${item.id}" class="view-btn">View Object</a>
+        `;
+        grid.appendChild(card);
     });
 }
-syncCustomInventory(); // Execute instantly on script parsing
 
 // --- GLOBAL SEARCH ENGINE AUTOCOMPLETE ENVIRONMENT ---
 document.addEventListener('DOMContentLoaded', () => {

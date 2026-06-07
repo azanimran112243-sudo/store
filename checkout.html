@@ -10,7 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
     <style>
         :root {
             --bg-black: #0A0A0C;
@@ -588,228 +589,274 @@
     </div>
 
     <script>
-        const activeCart = JSON.parse(localStorage.getItem('aion_cart')) || [];
-if (activeCart.length === 0) {
-    window.location.href = 'index.html';
-}
-        let selectedPaymentChannel = 'cod-panel';
-        let systemCalculatedCart = [];
+    // --- GLOBAL SYSTEM CORE ARCHITECTURE STATES ---
+    const activeCart = JSON.parse(localStorage.getItem('aion_cart')) || [];
+    if (activeCart.length === 0) {
+        window.location.href = 'index.html';
+    }
 
-        // --- RENDER CHECKOUT INVENTORY SUMMARY ---
-        function renderCheckoutManifestSummary() {
-            const container = document.getElementById('checkoutItemsContainer');
-            systemCalculatedCart = JSON.parse(localStorage.getItem('aion_cart')) || [];
+    let selectedPaymentChannel = 'cod-panel';
+    let systemCalculatedCart = [...activeCart];
+    const SYSTEM_WHATSAPP_NUMBER = "923001234567"; // Set your corporate WhatsApp destination node here
 
-            if (!container) return;
+    // --- RENDER CHECKOUT INVENTORY SUMMARY ---
+    function renderCheckoutManifestSummary() {
+        const container = document.getElementById('checkoutItemsContainer');
+        systemCalculatedCart = JSON.parse(localStorage.getItem('aion_cart')) || [];
 
-            if (systemCalculatedCart.length === 0) {
-                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; font-family:var(--font-mono); text-align:center; padding:20px 0;">MANIFEST VECTOR EMPTY</div>`;
-                return;
-            }
+        if (!container) return;
 
-            container.innerHTML = '';
-            let subtotalAccumulator = 0;
-
-            systemCalculatedCart.forEach(item => {
-                subtotalAccumulator += (item.price * item.quantity);
-                const traceImageSrc = item.img || item.image || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500';
-
-                const rowNode = document.createElement('div');
-                rowNode.style.display = 'flex';
-                rowNode.style.gap = '15px';
-                rowNode.style.alignItems = 'center';
-                rowNode.style.marginBottom = '15px';
-                rowNode.style.paddingBottom = '15px';
-                rowNode.style.borderBottom = '1px solid var(--border-muted)';
-
-                rowNode.innerHTML = `
-                    <img src="${traceImageSrc}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid var(--border-muted); background: var(--surface-accent);">
-                    <div style="flex: 1;">
-                        <h4 style="font-size: 0.8rem; color: var(--text-primary); font-weight: 500; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${item.name}</h4>
-                        <p style="font-size: 0.75rem; color: var(--text-secondary); font-family: var(--font-mono);">QTY: ${item.quantity} × Rs. ${item.price.toLocaleString()}</p>
-                    </div>
-                    <span style="font-size: 0.85rem; font-family: var(--font-mono); font-weight: 600; color: var(--text-primary);">Rs. ${(item.price * item.quantity).toLocaleString()}</span>
-                `;
-                container.appendChild(rowNode);
-            });
-
-            const shippingCost = 250;
-            const absoluteGrandTotal = subtotalAccumulator + shippingCost;
-
-            document.getElementById('summarySubtotal').innerText = `Rs. ${subtotalAccumulator.toLocaleString()}`;
-            document.getElementById('summaryGrandTotal').innerText = `Rs. ${absoluteGrandTotal.toLocaleString()}`;
+        if (systemCalculatedCart.length === 0) {
+            container.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; font-family:var(--font-mono); text-align:center; padding:20px 0;">MANIFEST VECTOR EMPTY</div>`;
+            return;
         }
 
-        // Tab selection matrix control algorithm
-        function switchPaymentChannel(targetPanelId) {
-            selectedPaymentChannel = targetPanelId;
-            
-            document.querySelectorAll('.payment-content-panel').forEach(panel => {
-                panel.classList.remove('active');
-            });
-            document.querySelectorAll('.matrix-tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+        container.innerHTML = '';
+        let subtotalAccumulator = 0;
 
-            document.getElementById(targetPanelId).classList.add('active');
-            
-            const targetIndexMap = { 'cod-panel': 1, 'mobile-wallet-panel': 2, 'whatsapp-panel': 3 };
-            const index = targetIndexMap[targetPanelId];
-            document.querySelector(`.payment-matrix-tabs .matrix-tab-btn:nth-child(${index})`).classList.add('active');
+        systemCalculatedCart.forEach(item => {
+            subtotalAccumulator += (item.price * item.quantity);
+            const traceImageSrc = item.img || item.image || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500';
 
-            const coreBtnText = document.getElementById('btnActionText');
-            if (targetPanelId === 'whatsapp-panel') {
-                coreBtnText.innerText = "REDIRECT AND CONCLUDE VIA WHATSAPP";
+            const rowNode = document.createElement('div');
+            rowNode.style.display = 'flex';
+            rowNode.style.gap = '15px';
+            rowNode.style.alignItems = 'center';
+            rowNode.style.marginBottom = '15px';
+            rowNode.style.paddingBottom = '15px';
+            rowNode.style.borderBottom = '1px solid var(--border-muted)';
+
+            rowNode.innerHTML = `
+                <img src="${traceImageSrc}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid var(--border-muted); background: var(--surface-accent);">
+                <div style="flex: 1;">
+                    <h4 style="font-size: 0.8rem; color: var(--text-primary); font-weight: 500; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${item.name}</h4>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary); font-family: var(--font-mono);">QTY: ${item.quantity} × Rs. ${item.price.toLocaleString()}</p>
+                </div>
+                <span style="font-size: 0.85rem; font-family: var(--font-mono); font-weight: 600; color: var(--text-primary);">Rs. ${(item.price * item.quantity).toLocaleString()}</span>
+            `;
+            container.appendChild(rowNode);
+        });
+
+        const shippingCost = 250;
+        const absoluteGrandTotal = subtotalAccumulator + shippingCost;
+
+        document.getElementById('summarySubtotal').innerText = `Rs. ${subtotalAccumulator.toLocaleString()}`;
+        document.getElementById('summaryGrandTotal').innerText = `Rs. ${absoluteGrandTotal.toLocaleString()}`;
+    }
+
+    // --- TAB SELECTION MATRIX CONTROL ALGORITHM ---
+    function switchPaymentChannel(targetPanelId) {
+        selectedPaymentChannel = targetPanelId;
+        
+        document.querySelectorAll('.payment-content-panel').forEach(panel => {
+            panel.classList.remove('active');
+        });
+        document.querySelectorAll('.matrix-tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        document.getElementById(targetPanelId).classList.add('active');
+        
+        const targetIndexMap = { 'cod-panel': 1, 'mobile-wallet-panel': 2, 'whatsapp-panel': 3 };
+        const index = targetIndexMap[targetPanelId];
+        document.querySelector(`.payment-matrix-tabs .matrix-tab-btn:nth-child(${index})`).classList.add('active');
+
+        const coreBtnText = document.getElementById('btnActionText');
+        if (targetPanelId === 'whatsapp-panel') {
+            coreBtnText.innerText = "REDIRECT AND CONCLUDE VIA WHATSAPP";
+        } else {
+            coreBtnText.innerText = "CONFIRM SYSTEM ORDER ARRANGEMENT";
+        }
+    }
+
+    function executeSystemFormValidation() {
+        document.getElementById('hiddenFormSubmitElement').click();
+    }
+
+    // --- CORE LOCAL PROFILE STORAGE SYNC MATRIX ---
+    function saveOrderToLocalHistory(paymentMethodLabel) {
+        if (systemCalculatedCart.length === 0) return;
+
+        let subtotalAccumulator = systemCalculatedCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const totalCostWithShipping = subtotalAccumulator + 250;
+
+        const trackingID = Math.floor(100000 + Math.random() * 900000); 
+        const formattedDate = new Date().toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' });
+
+        const structuralOrderRecord = {
+            orderID: trackingID.toString(),
+            date: formattedDate,
+            items: systemCalculatedCart.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price
+            })),
+            totalCost: totalCostWithShipping,
+            statusText: paymentMethodLabel === 'WHATSAPP' ? 'WHATSAPP ORDER' : 'PROCESSING'
+        };
+
+        let existingHistoryLedger = JSON.parse(localStorage.getItem('aion_orders')) || [];
+        existingHistoryLedger.unshift(structuralOrderRecord);
+        localStorage.setItem('aion_orders', JSON.stringify(existingHistoryLedger));
+    }
+
+    // --- ORDER DISPATCH AND PIPELINE PROCESSING HANDLER ---
+    function handleOrderSubmission(event) {
+        event.preventDefault();
+
+        const clientName = `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`;
+        const clientPhone = document.getElementById('phoneNumber').value;
+
+        if (selectedPaymentChannel === 'whatsapp-panel') {
+            transmitManifestToWhatsAppChannel('Checkout Router Matrix Request');
+            return;
+        }
+
+        const currentMethodLabel = selectedPaymentChannel === 'cod-panel' ? 'COD' : 'MOBILE WALLET';
+        saveOrderToLocalHistory(currentMethodLabel);
+
+        const spinner = document.getElementById('btnProcessingSpinner');
+        const actionText = document.getElementById('btnActionText');
+        
+        if(spinner) spinner.style.display = 'block';
+        if(actionText) actionText.innerText = "COMPILING TRANSACTION LOGS...";
+
+        setTimeout(() => {
+            if(spinner) spinner.style.display = 'none';
+            
+            const successMsgNode = document.getElementById('successScreenMessage');
+            if(selectedPaymentChannel === 'cod-panel') {
+                successMsgNode.innerText = `Thank you ${clientName}. Your Cash on Delivery order manifest has been registered. Our logistics dispatch unit will call or message your terminal code (${clientPhone}) shortly to confirm shipment authorization details.`;
             } else {
-                coreBtnText.innerText = "CONFIRM SYSTEM ORDER ARRANGEMENT";
-            }
-        }
-
-        function executeSystemFormValidation() {
-            document.getElementById('hiddenFormSubmitElement').click();
-        }
-
-        // --- CORE LOCAL PROFILE STORAGE SYNC MATRIX ---
-        // Generates the accurate architecture payload format parsed directly by profile.html
-        function saveOrderToLocalHistory(paymentMethodLabel) {
-            if (systemCalculatedCart.length === 0) return;
-
-            let subtotalAccumulator = systemCalculatedCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const totalCostWithShipping = subtotalAccumulator + 250;
-
-            const trackingID = Math.floor(100000 + Math.random() * 900000); 
-            const formattedDate = new Date().toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' });
-
-            const structuralOrderRecord = {
-                orderID: trackingID.toString(),
-                date: formattedDate,
-                items: systemCalculatedCart.map(item => ({
-                    name: item.name,
-                    quantity: item.quantity,
-                    price: item.price
-                })),
-                totalCost: totalCostWithShipping,
-                statusText: paymentMethodLabel === 'WHATSAPP' ? 'WHATSAPP ORDER' : 'PROCESSING'
-            };
-
-            // Pull current logs terminal array, prepend incoming data packet, commit back to ledger
-            let existingHistoryLedger = JSON.parse(localStorage.getItem('aion_orders')) || [];
-            existingHistoryLedger.unshift(structuralOrderRecord);
-            localStorage.setItem('aion_orders', JSON.stringify(existingHistoryLedger));
-        }
-
-        // Execution pipeline handler processing logic
-        function handleOrderSubmission(event) {
-            event.preventDefault();
-
-            const clientName = `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`;
-            const clientPhone = document.getElementById('phoneNumber').value;
-
-            if (selectedPaymentChannel === 'whatsapp-panel') {
-                transmitManifestToWhatsAppChannel('Checkout Router Matrix Request');
-                return;
+                const referenceId = document.getElementById('transactionId').value || 'N/A';
+                successMsgNode.innerText = `Thank you ${clientName}. Your Mobile Wallet ledger transfer tracking index reference (${referenceId}) is loaded into the auditing matrix queue list for verification validation sweeps.`;
             }
 
-            // Save order straight into local system storage before showing success confirmation panel
-            const currentMethodLabel = selectedPaymentChannel === 'cod-panel' ? 'COD' : 'MOBILE WALLET';
-            saveOrderToLocalHistory(currentMethodLabel);
+            document.getElementById('successScreenMatrix').classList.add('active');
+        }, 1400);
+    }
 
-            // UI feedback cycles 
-            const spinner = document.getElementById('btnProcessingSpinner');
-            const actionText = document.getElementById('btnActionText');
-            
-            if(spinner) spinner.style.display = 'block';
-            if(actionText) actionText.innerText = "COMPILING TRANSACTION LOGS...";
+    // --- DIRECT DYNAMIC WHATSAPP SYSTEM MANIFEST DISPATCH MATRIX ---
+    function transmitManifestToWhatsAppChannel(routingOriginContext) {
+        const firstName = document.getElementById('firstName').value.trim() || "Unspecified";
+        const lastName = document.getElementById('lastName').value.trim() || "Profile";
+        const phone = document.getElementById('phoneNumber').value.trim() || "No Terminal Phone Given";
+        const email = document.getElementById('emailAddress').value.trim() || "N/A";
+        const address = document.getElementById('shippingAddress').value.trim() || "No Address Metadata";
+        const city = document.getElementById('deliveryCity').value.trim() || "No City Metadata";
 
-            setTimeout(() => {
-                if(spinner) spinner.style.display = 'none';
-                
-                const successMsgNode = document.getElementById('successScreenMessage');
-                if(selectedPaymentChannel === 'cod-panel') {
-                    successMsgNode.innerText = `Thank you ${clientName}. Your Cash on Delivery order manifest has been registered. Our logistics dispatch unit will call or message your terminal code (${clientPhone}) shortly to confirm shipment authorization details.`;
-                } else {
-                    const referenceId = document.getElementById('transactionId').value || 'N/A';
-                    successMsgNode.innerText = `Thank you ${clientName}. Your Mobile Wallet ledger transfer tracking index reference (${referenceId}) is loaded into the auditing matrix queue list for verification validation sweeps.`;
-                }
-
-                document.getElementById('successScreenMatrix').classList.add('active');
-            }, 1400);
+        if (systemCalculatedCart.length === 0) {
+            alert("Core Error: Your item compilation registry array index tracking stack contains 0 assets.");
+            return;
         }
 
-        // --- DIRECT DYNAMIC WHATSAPP SYSTEM MANIFEST DISPATCH MATRIX ---
-        function transmitManifestToWhatsAppChannel(routingOriginContext) {
-            const SYSTEM_WHATSAPP_NUMBER = "923001234567"; // Set your corporate WhatsApp node here
+        saveOrderToLocalHistory('WHATSAPP');
 
-            const firstName = document.getElementById('firstName').value.trim() || "Unspecified";
-            const lastName = document.getElementById('lastName').value.trim() || "Profile";
-            const phone = document.getElementById('phoneNumber').value.trim() || "No Terminal Phone Given";
-            const email = document.getElementById('emailAddress').value.trim() || "N/A";
-            const address = document.getElementById('shippingAddress').value.trim() || "No Address Metadata";
-            const city = document.getElementById('deliveryCity').value.trim() || "No City Metadata";
+        let textManifestStream = `⚡ AION OPERATIONAL ORDER MANIFEST ⚡\n`;
+        textManifestStream += `===================================\n`;
+        textManifestStream += `▶ ROUTER ORIGIN: ${routingOriginContext.toUpperCase()}\n`;
+        textManifestStream += `▶ SETTLEMENT LAYER: ${selectedPaymentChannel.replace('-panel','').toUpperCase()}\n\n`;
+        textManifestStream += `👥 CUSTOMER INFORMATION PROFILE:\n`;
+        textManifestStream += `• Name: ${firstName} ${lastName}\n`;
+        textManifestStream += `• Phone Ref: ${phone}\n`;
+        textManifestStream += `• Email Node: ${email}\n`;
+        textManifestStream += `• Destination: ${address}, ${city}\n\n`;
+        textManifestStream += `📦 COMPILED INVENTORY ITEM LOGS:\n`;
 
-            if (systemCalculatedCart.length === 0) {
-                alert("Core Error: Your item compilation registry array index tracking stack contains 0 assets.");
-                return;
-            }
+        let cumulativeTotal = 0;
+        systemCalculatedCart.forEach((item, idx) => {
+            const rowPrice = item.price * item.quantity;
+            cumulativeTotal += rowPrice;
+            textManifestStream += `  [0${idx + 1}] ${item.name}\n`;
+            textManifestStream += `      QTY: ${item.quantity} × Rs. ${item.price.toLocaleString()} -> Sub: Rs. ${rowPrice.toLocaleString()}\n`;
+        });
 
-            // Save order into profile dashboard registry even when passing routing to raw WhatsApp strings
-            saveOrderToLocalHistory('WHATSAPP');
+        const shippingCharge = 250;
+        const completeTotalBalance = cumulativeTotal + shippingCharge;
 
-            let textManifestStream = `⚡ AION OPERATIONAL ORDER MANIFEST ⚡\n`;
-            textManifestStream += `===================================\n`;
-            textManifestStream += `▶ ROUTER ORIGIN: ${routingOriginContext.toUpperCase()}\n`;
-            textManifestStream += `▶ SETTLEMENT LAYER: ${selectedPaymentChannel.replace('-panel','').toUpperCase()}\n\n`;
-            textManifestStream += `👥 CUSTOMER INFORMATION PROFILE:\n`;
-            textManifestStream += `• Name: ${firstName} ${lastName}\n`;
-            textManifestStream += `• Phone Ref: ${phone}\n`;
-            textManifestStream += `• Email Node: ${email}\n`;
-            textManifestStream += `• Destination: ${address}, ${city}\n\n`;
-            textManifestStream += `📦 COMPILED INVENTORY ITEM LOGS:\n`;
+        textManifestStream += `\n-----------------------------------\n`;
+        textManifestStream += `💰 INVENTORY VALUE: Rs. ${cumulativeTotal.toLocaleString()}\n`;
+        textManifestStream += `🚚 SHIELD LOGISTICS: Rs. ${shippingCharge.toLocaleString()}\n`;
+        textManifestStream += ` TOTAL RECEIVABLE BALANCE: Rs. ${completeTotalBalance.toLocaleString()}\n`;
+        textManifestStream += `===================================\n`;
+        textManifestStream += `🤖 [Operational Query: Requesting secure validation processing and verification confirmation checks from system administration.]`;
 
-            let cumulativeTotal = 0;
-            systemCalculatedCart.forEach((item, idx) => {
-                const rowPrice = item.price * item.quantity;
-                cumulativeTotal += rowPrice;
-                textManifestStream += `  [0${idx + 1}] ${item.name}\n`;
-                textManifestStream += `       QTY: ${item.quantity} × Rs. ${item.price.toLocaleString()} -> Sub: Rs. ${rowPrice.toLocaleString()}\n`;
-            });
+        const encodedMatrixUrlString = `https://wa.me/${SYSTEM_WHATSAPP_NUMBER}?text=${encodeURIComponent(textManifestStream)}`;
+        window.open(encodedMatrixUrlString, '_blank');
 
-            const shippingCharge = 250;
-            const completeTotalBalance = cumulativeTotal + shippingCharge;
-
-            textManifestStream += `\n-----------------------------------\n`;
-            textManifestStream += `💰 INVENTORY VALUE: Rs. ${cumulativeTotal.toLocaleString()}\n`;
-            textManifestStream += `🚚 SHIELD LOGISTICS: Rs. ${shippingCharge.toLocaleString()}\n`;
-            textManifestStream += ` TOTAL RECEIVABLE BALANCE: Rs. ${completeTotalBalance.toLocaleString()}\n`;
-            textManifestStream += `===================================\n`;
-            textManifestStream += `🤖 [Operational Query: Requesting secure validation processing and verification confirmation checks from system administration.]`;
-
-            const encodedMatrixUrlString = `https://wa.me/${SYSTEM_WHATSAPP_NUMBER}?text=${encodeURIComponent(textManifestStream)}`;
-            
-            window.open(encodedMatrixUrlString, '_blank');
-
-            if (selectedPaymentChannel === 'whatsapp-panel') {
-                localStorage.removeItem('aion_cart');
-                window.location.href = "index.html";
-            }
-        }
-
-        // Clean active cart storage when exiting the checkout framework flow controls
-        document.getElementById('clearCartRedirectAction').addEventListener('click', () => {
+        if (selectedPaymentChannel === 'whatsapp-panel') {
             localStorage.removeItem('aion_cart');
-            window.location.href = 'index.html';
+            window.location.href = "index.html";
+        }
+    }
+
+    // --- ALTERNATE SECURE BACKUP PROCESSING NODE ---
+    function processSecureCheckoutOrder() {
+        const customerName = document.getElementById('checkout-name')?.value.trim() || 'NOT PROVIDED';
+        const customerPhone = document.getElementById('checkout-phone')?.value.trim() || 'NOT PROVIDED';
+        const customerAddress = document.getElementById('checkout-address')?.value.trim() || 'NOT PROVIDED';
+        const customerCity = document.getElementById('checkout-city')?.value.trim() || 'NOT PROVIDED';
+        const fallbackPaymentChannel = document.querySelector('input[name="payment-method"]:checked')?.value || 'whatsapp-panel';
+
+        const cart = JSON.parse(localStorage.getItem('aion_cart')) || [];
+        
+        if (cart.length === 0) {
+            alert("CRITICAL ERROR: Your cart terminal is completely empty.");
+            return;
+        }
+
+        let textManifestStream = `====================================\n`;
+        textManifestStream += `       AION ORDER MANIFEST CORE      \n`;
+        textManifestStream += `====================================\n\n`;
+        
+        textManifestStream += `[CUSTOMER TERMINAL DATA]\n`;
+        textManifestStream += `• Name: ${customerName.toUpperCase()}\n`;
+        textManifestStream += `• Contact: ${customerPhone}\n`;
+        textManifestStream += `• Address: ${customerAddress}\n`;
+        textManifestStream += `• City: ${customerCity.toUpperCase()}\n`;
+        textManifestStream += `• Settlement: ${fallbackPaymentChannel.toUpperCase()}\n\n`;
+
+        textManifestStream += `[PURCHASED LINE ITEMS]\n`;
+        
+        let orderTotalCost = 0;
+        cart.forEach((item, index) => {
+            const itemLineTotal = item.price * item.quantity;
+            orderTotalCost += itemLineTotal;
+            textManifestStream += `${index + 1}. ${item.name} [QTY: ${item.quantity}]\n`;
+            textManifestStream += `   Price: Rs. ${item.price.toLocaleString()} | Subtotal: Rs. ${itemLineTotal.toLocaleString()}\n`;
         });
 
-        window.addEventListener('DOMContentLoaded', () => {
-            renderCheckoutManifestSummary();
-            
-            const savedPfpData = localStorage.getItem('aion_user_pfp');
-            if (savedPfpData && document.getElementById('headerNavAvatar')) {
-                const node = document.getElementById('headerNavAvatar');
-                node.style.backgroundImage = `url('${savedPfpData}')`;
-                if(document.getElementById('headerNavIcon')) document.getElementById('headerNavIcon').style.display = 'none';
+        textManifestStream += `\n------------------------------------\n`;
+        textManifestStream += `TOTAL INVOICE VALUE: Rs. ${orderTotalCost.toLocaleString()}\n`;
+        textManifestStream += `------------------------------------\n\n`;
+        textManifestStream += `🤖 [Operational Query: Requesting secure validation processing and verification confirmation checks from system administration.]`;
+
+        const encodedMatrixUrlString = `https://wa.me/${SYSTEM_WHATSAPP_NUMBER}?text=${encodeURIComponent(textManifestStream)}`;
+        window.open(encodedMatrixUrlString, '_blank');
+
+        if (fallbackPaymentChannel === 'whatsapp-panel') {
+            localStorage.removeItem('aion_cart');
+            window.location.href = "index.html";
+        }
+    }
+
+    // --- RUNTIME UNIFIED INITIALIZER MATRIX ---
+    document.getElementById('clearCartRedirectAction').addEventListener('click', () => {
+        localStorage.removeItem('aion_cart');
+        window.location.href = 'index.html';
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        renderCheckoutManifestSummary();
+        
+        // Native local identification profile synchronization
+        const savedPfpData = localStorage.getItem('aion_user_pfp');
+        if (savedPfpData && document.getElementById('headerNavAvatar')) {
+            const node = document.getElementById('headerNavAvatar');
+            node.style.backgroundImage = `url('${savedPfpData}')`;
+            if(document.getElementById('headerNavIcon')) {
+                document.getElementById('headerNavIcon').style.display = 'none';
             }
-        });
-    </script>
-</body>
-</html>
+        }
+    });
+</script>

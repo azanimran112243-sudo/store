@@ -10,7 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
     <style>
         /* --- Brand Color Palette (Cyber-Editorial Monochromatic) --- */
         :root {
@@ -638,6 +639,62 @@
             color: var(--text-muted);
         }
 
+        /* --- Slider Content Overlay Management Context --- */
+.slide-content-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Forces copy to sit elegantly at the lower boundary */
+    align-items: flex-start;
+    padding: 60px;
+    box-sizing: border-box;
+    /* Dark industrial fade ensuring high-contrast typography readability */
+    background: linear-gradient(to top, rgba(10, 10, 12, 0.9) 0%, rgba(10, 10, 12, 0.4) 50%, rgba(0,0,0,0) 100%);
+    z-index: 2;
+}
+
+/* Restrict line extensions so copy doesn't mask wide parts of the visual frame */
+.slide-title {
+    font-size: 3rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    max-width: 650px;
+    margin-bottom: 12px;
+    color: var(--text-dark);
+}
+
+.slide-description {
+    font-size: 1.05rem;
+    color: var(--text-gray);
+    max-width: 450px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+/* --- MOBILE RESPONSIVE SLIDER TYPOGRAPHY CORRECTIONS --- */
+@media (max-width: 768px) {
+    .slide-content-overlay {
+        padding: 24px; /* Pulls text tightly into corners on small screens */
+    }
+
+    .slide-title {
+        font-size: 1.75rem; /* Downscales typography footprint automatically */
+        max-width: 100%;
+        line-height: 1.2;
+    }
+
+    .slide-description {
+        font-size: 0.9rem;
+        max-width: 100%;
+        margin-bottom: 16px;
+    }
+}
+
         /* --- Adaptive Media Framework --- */
         @media (max-width: 992px) {
             .showcase-grid { grid-template-columns: repeat(2, 1fr); }
@@ -661,6 +718,56 @@
             .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         }
     </style>
+    <head>
+    <style>
+        /* --- Brand Color Palette (Cyber-Editorial Monochromatic) --- */
+        :root {
+            --primary-color: #FFFFFF;
+            /* ... your existing CSS styles are all up here ... */
+        }
+
+        /* ======================================================= */
+        /* PASTE THE RESPONSIVE CODE HERE (RIGHT BEFORE THE CLOSING TAG) */
+        /* ======================================================= */
+        
+        /* --- Global Responsive Grid System Core --- */
+        .product-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 32px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            box-sizing: border-box;
+        }
+
+        /* Ensure images dynamically morph to match card dimensions */
+        .product-card, .product-card img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* --- GLOBAL MOBILE VIEWPORT BREAKPOINTS (768px and Under) --- */
+        @media (max-width: 768px) {
+            .global-nav-wrapper, 
+            .footer-panel-links,
+            .cart-checkout-layout-split {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+                padding: 16px;
+            }
+
+            .product-grid-container {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 16px;
+                padding: 0 16px;
+            }
+        }
+    </style> </head>
 </head>
 <body>
 
@@ -693,7 +800,7 @@
             <div class="slide-content">
                 <span class="slide-tag">EXCLUSIVE ARCHIVE DROP</span>
                 <h2>CYBERPUNK EDITORIAL APPAREL</h2>
-                <p>Engineered for functional utility, built with extreme high-contrast monolithic aesthetics.</p>
+                
                 <a href="#catalog" class="slide-btn">EXPLORE DROPS</a>
             </div>
             <img src="kjl.jpg" alt="Cyberpunk Drop" class="slide-img">
@@ -703,7 +810,7 @@
             <div class="slide-content">
                 <span class="slide-tag">HARDWARE ACQUISITION</span>
                 <h2>PREMIUM INDUSTRIAL TOOLS</h2>
-                <p>Minimalist tactile interfaces and structural assets built to survive complex deployment workflows.</p>
+                
                 <a href="#catalog" class="slide-btn">VIEW HARDWARE</a>
             </div>
             <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1400&auto=format&fit=crop&q=80" alt="Industrial Tools" class="slide-img">
@@ -759,7 +866,10 @@
             </div>
         </div>
 
-        <div class="product-grid" id="mainProductGrid"></div>
+       <main>
+    <div class="product-grid-container" id="product-grid">
+        </div>
+</main>
     </section>
 
     <section class="payment-section">
@@ -822,42 +932,40 @@
             { id: 5, name: "Vanguard Leather Boots", price: 14000, img: "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=500&auto=format&fit=crop&q=60" }
         ];
 
-        // Dynamic Unification and Injection Engine Block for Product Grid Card Mounts
         function populateMainProductGrid() {
-            const grid = document.getElementById('mainProductGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
+    const gridContainer = document.getElementById('product-grid'); // Replace with your actual product grid element ID
+    if (!gridContainer) return;
 
-            // Extract custom minted supplier arrays from sandboxed localStorage
-            const customProducts = JSON.parse(localStorage.getItem('aion_custom_products')) || [];
-            const combinedInventory = [...baseProducts];
-            
-            customProducts.forEach(prod => {
-                if (!combinedInventory.some(item => item.id === prod.id)) {
-                    combinedInventory.push(prod);
-                }
-            });
+    // 1. Grab your global hardcoded array catalog
+    const staticInventory = [...window.SEARCH_INVENTORY];
 
-            // Map layout elements and paint them smoothly directly into index architecture
-            combinedInventory.forEach(product => {
-                grid.innerHTML += `
-                    <div class="product-card">
-                        <a href="product.html?id=${product.id}" style="text-decoration: none; color: inherit; display: block;">
-                            <div class="product-img-container">
-                                <img src="${product.img}" alt="${product.name}" loading="lazy">
-                            </div>
-                            <div class="product-info">
-                                <div class="product-name">${product.name}</div>
-                                <div class="product-price">Rs. ${product.price.toLocaleString()}</div>
-                                <button class="add-to-cart-btn" onclick="addToCart(event, ${product.id})">
-                                    <i class="fa-solid fa-plus"></i> Add to Cart
-                                </button>
-                            </div>
-                        </a>
-                    </div>
-                `;
-            });
-        }
+    // 2. Fetch the custom inventory array posted via the profile terminal
+    // Make sure the key matches exactly what you set inside profile.html (e.g., 'aion_custom_products')
+    const sellerInventory = JSON.parse(localStorage.getItem('aion_custom_products')) || [];
+
+    // 3. Merge both collections together into a single global interface stream
+    const comprehensiveCatalog = [...staticInventory, ...sellerInventory];
+
+    // 4. Wipe container clean and render items dynamically
+    gridContainer.innerHTML = '';
+    
+    comprehensiveCatalog.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.className = 'product-card';
+        productCard.innerHTML = `
+            <a href="product.html?id=${product.id}">
+                <div class="product-img-wrapper">
+                    <img src="${product.img}" alt="${product.name}">
+                </div>
+                <div class="product-details">
+                    <h3 class="product-title">${product.name}</h3>
+                    <p class="product-price">Rs. ${product.price.toLocaleString()}</p>
+                </div>
+            </a>
+        `;
+        gridContainer.appendChild(productCard);
+    });
+}
 
         // Add to Cart Logic Stream Processor Isolation Handler
         function addToCart(event, productId) {
