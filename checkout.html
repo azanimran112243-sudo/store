@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AION — SECURE CHECKOUT CORE</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-black: #0A0A0C;
+            --surface-dark: #121214;
+            --surface-accent: #1A1A1E;
+            --border-muted: #27272A;
+            --border-focus: #FFFFFF;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A1A1AA;
+            --text-muted: #52525B;
+            --accent-green: #22C55E;
+            --font-main: 'Poppins', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            letter-spacing: -0.01em;
+            line-height: 1.5;
+            padding-bottom: 60px;
+        }
+
+        /* --- Header Brand Module --- */
+        header {
+            border-bottom: 1px solid var(--border-muted);
+            background: rgba(10, 10, 12, 0.8);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            font-family: var(--font-mono);
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .back-to-cart {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-cart:hover {
+            color: var(--text-primary);
+        }
+
+        /* --- Main Checkout Split Grid System --- */
+        .checkout-grid {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 25px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 50px;
+            align-items: start;
+        }
+
+        /* --- Column Left: Information Capture Pipeline --- */
+        .form-pipeline-column {
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+        }
+
+        .section-block {
+            background: var(--surface-dark);
+            border: 1px solid var(--border-muted);
+            padding: 30px;
+        }
+
+        .section-title {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-muted);
+            padding-bottom: 12px;
+        }
+
+        .input-row-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .input-group:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .input-group label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        .core-input {
+            background: var(--bg-black);
+            border: 1px solid var(--border-muted);
+            color: var(--text-primary);
+            padding: 12px 15px;
+            font-size: 0.9rem;
+            font-family: var(--font-main);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .core-input:focus {
+            border-color: var(--border-focus);
+        }
+
+        /* --- Payment Options Architecture --- */
+        .payment-matrix-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .matrix-tab-btn {
+            background: var(--bg-black);
+            border: 1px solid var(--border-muted);
+            color: var(--text-secondary);
+            padding: 15px 10px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .matrix-tab-btn i {
+            font-size: 1.1rem;
+        }
+
+        .matrix-tab-btn:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        .matrix-tab-btn.active {
+            background: var(--surface-accent);
+            border-color: var(--border-focus);
+            color: var(--text-primary);
+        }
+
+        .payment-content-panel {
+            background: var(--bg-black);
+            border: 1px solid var(--border-muted);
+            padding: 25px;
+            display: none;
+        }
+
+        .payment-content-panel.active {
+            display: block;
+        }
+
+        .panel-instruction {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        /* Custom Checklist Validation */
+        .confirmation-checkbox-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        .confirmation-checkbox-wrapper input {
+            margin-top: 4px;
+            accent-color: var(--text-primary);
+        }
+
+        .confirmation-checkbox-wrapper span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* --- Column Right: Order Summary Matrix Panel --- */
+        .summary-sticky-column {
+            position: sticky;
+            top: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .checkout-items-list-wrapper {
+            max-height: 340px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 5px;
+        }
+
+        /* Custom Scrollbar */
+        .checkout-items-list-wrapper::-webkit-scrollbar {
+            width: 4px;
+        }
+        .checkout-items-list-wrapper::-webkit-scrollbar-thumb {
+            background: var(--border-muted);
+        }
+
+        .summary-calculation-table {
+            border-top: 1px solid var(--border-muted);
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .calc-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .calc-row.grand-total {
+            border-top: 1px solid var(--border-muted);
+            padding-top: 15px;
+            margin-top: 5px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+        }
+
+        /* Core Execution Actions Trigger Buttons */
+        .submit-order-trigger-btn {
+            width: 100%;
+            background: var(--text-primary);
+            color: var(--bg-black);
+            border: 1px solid var(--text-primary);
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-order-trigger-btn:hover {
+            background: transparent;
+            color: var(--text-primary);
+        }
+
+        .whatsapp-trust-btn {
+            width: 100%;
+            background: transparent;
+            color: #25D366;
+            border: 1px solid #25D366;
+            padding: 14px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .whatsapp-trust-btn:hover {
+            background: rgba(37, 211, 102, 0.1);
+        }
+
+        /* --- Success Feedback Overlay Matrix Screen --- */
+        .success-overlay-matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-black);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .success-overlay-matrix.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .success-manifest-card {
+            text-align: center;
+            max-width: 500px;
+            padding: 40px;
+            border: 1px solid var(--border-muted);
+            background: var(--surface-dark);
+        }
+
+        .success-manifest-card i {
+            font-size: 3rem;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .success-manifest-card h2 {
+            font-family: var(--font-mono);
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .success-manifest-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        /* --- Loader Animations Spinner --- */
+        .spinner-node {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--bg-black);
+            border-top: 2px solid var(--text-primary);
+            border-radius: 50%;
+            animation: spinLoop 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spinLoop {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 900px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="brand-logo">Aion</a>
+            <a href="cart.html" class="back-to-cart">
+                <i class="fa-solid fa-arrow-left-long"></i> Return to Cart
+            </a>
+        </div>
+    </header>
+
+    <main class="checkout-grid">
+        
+        <div class="form-pipeline-column">
+            <form id="checkoutProcessingCoreForm" onsubmit="handleOrderSubmission(event)">
+                
+                <div class="section-block" style="margin-bottom: 30px;">
+                    <div class="section-title">
+                        <i class="fa-solid fa-truck-ramp-box"></i> 01 // DELIVERY MANIFEST TARGET
+                    </div>
+
+                    <div class="input-row-split">
+                        <div class="input-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" class="core-input" required placeholder="Ayan">
+                        </div>
+                        <div class="input-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" class="core-input" required placeholder="Imran">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="emailAddress">Email Coordinates *</label>
+                        <input type="email" id="emailAddress" class="core-input" required placeholder="workkingtungtung@gmail.com">
+                    </div>
+
+                    <div class="input-group" style="margin-top: 20px;">
+                        <label for="phoneNumber">Operational Phone / WhatsApp Number *</label>
+                        <input type="tel" id="phoneNumber" class="core-input" required placeholder="e.g., 03001234567" pattern="[0-9]{10,13}">
+                    </div>
+
+                    <div class="input-row-split" style="margin-top: 20px;">
+                        <div class="input-group" style="grid-column: span 2;">
+                            <label for="shippingAddress">Street Destination Address *</label>
+                            <input type="text" id="shippingAddress" class="core-input" required placeholder="House/Apartment, Sector, Street address Matrix">
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="margin-top: 20px;">
+                        <label for="deliveryCity">City Zone *</label>
+                        <input type="text" id="deliveryCity" class="core-input" required placeholder="Lahore">
+                    </div>
+                </div>
+
+                <div class="section-block">
+                    <div class="section-title">
+                        <i class="fa-solid fa-credit-card"></i> 02 // TRANSACTION SETTLEMENT LAYER
+                    </div>
+
+                    <div class="payment-matrix-tabs">
+                        <div class="matrix-tab-btn active" onclick="switchPaymentChannel('cod-panel')">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                            <span>COD</span>
+                        </div>
+                        <div class="matrix-tab-btn" onclick="switchPaymentChannel('mobile-wallet-panel')">
+                            <i class="fa-solid fa-wallet"></i>
+                            <span>MOBILE WALLET</span>
+                        </div>
+                        <div class="matrix-tab-btn" onclick="switchPaymentChannel('whatsapp-panel')">
+                            <i class="fa-brands fa-whatsapp"></i>
+                            <span>WHATSAPP</span>
+                        </div>
+                    </div>
+
+                    <div id="cod-panel" class="payment-content-panel active">
+                        <p class="panel-instruction">
+                            <strong>Cash On Delivery Verified Protocol:</strong> Pay directly via liquid cash when the shipping carrier hands over the physical asset item containers at your tracking destination location.
+                        </p>
+                        <div class="input-group">
+                            <label for="codQuestion">Verification Check: Are you available to receive calls at this phone number to confirm your order details? *</label>
+                            <input type="text" id="codQuestion" class="core-input" placeholder="Yes, I am available at this active node.">
+                        </div>
+                        <label class="confirmation-checkbox-wrapper">
+                            <input type="checkbox" required>
+                            <span>I confirm that the phone records provided match my active address profile for physical package distribution validation.</span>
+                        </label>
+                    </div>
+
+                    <div id="mobile-wallet-panel" class="payment-content-panel">
+                        <p class="panel-instruction">
+                            Transfer the calculated grand total parameter to our digital hub endpoint. Please specify the micro-wallet provider brand below to continue.
+                        </p>
+                        <div class="input-row-split">
+                            <div class="input-group">
+                                <label for="walletProvider">Provider Brand Selection</label>
+                                <select id="walletProvider" class="core-input" style="background: var(--bg-black);">
+                                    <option value="jazzcash">JazzCash Node (0300-XXXXXXX)</option>
+                                    <option value="easypaisa">EasyPaisa Node (0300-XXXXXXX)</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="transactionId">Transaction Reference Hash ID *</label>
+                                <input type="text" id="transactionId" class="core-input" placeholder="TRX-98382104">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="whatsapp-panel" class="payment-content-panel">
+                        <p class="panel-instruction">
+                            <strong>Direct Chat Checkout:</strong> Finalize dynamic customization parameters, arrange specialized banking transfers, or ask questions directly to our system administration core over WhatsApp chat streams.
+                        </p>
+                        <p class="panel-instruction" style="color: var(--accent-green); font-weight: 500;">
+                            <i class="fa-solid fa-circle-info"></i> Clicking submission under this tab forwards your entire configured metadata matrix straight into chat.
+                        </p>
+                    </div>
+
+                </div>
+
+                <button type="submit" id="hiddenFormSubmitElement" style="display: none;"></button>
+            </form>
+        </div>
+
+        <div class="summary-sticky-column">
+            <div class="section-block">
+                <div class="section-title" style="margin-bottom: 20px;">
+                    <i class="fa-solid fa-box-archive"></i> ORDER SPECIFICATION SUMMARY
+                </div>
+
+                <div id="checkoutItemsContainer" class="checkout-items-list-wrapper"></div>
+
+                <div class="summary-calculation-table">
+                    <div class="calc-row">
+                        <span>Cart Inventory Subtotal</span>
+                        <span id="summarySubtotal">Rs. 0</span>
+                    </div>
+                    <div class="calc-row">
+                        <span>Secure Logistics Allocation (Shipping)</span>
+                        <span id="summaryShipping">Rs. 250</span>
+                    </div>
+                    <div class="calc-row grand-total">
+                        <span>GRAND TOTAL RECEIVABLE</span>
+                        <span id="summaryGrandTotal">Rs. 0</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 12px;">
+                    <button type="button" class="submit-order-trigger-btn" onclick="executeSystemFormValidation()">
+                        <div id="btnProcessingSpinner" class="spinner-node"></div>
+                        <span id="btnActionText">CONFIRM SYSTEM ORDER ARRANGEMENT</span>
+                    </button>
+                    
+                    <button type="button" class="whatsapp-trust-btn" onclick="transmitManifestToWhatsAppChannel('Direct Query Matrix')">
+                        <i class="fa-brands fa-whatsapp"></i> ASK QUESTIONS / DISPATCH VIA WHATSAPP
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="successScreenMatrix" class="success-overlay-matrix">
+        <div class="success-manifest-card">
+            <i class="fa-solid fa-square-check"></i>
+            <h2>TRANSACTION CORE MANIFEST SAVED</h2>
+            <p id="successScreenMessage">Your operation processing cycle sequence completed successfully. The architecture inventory registry data packet has been locked into the system queue hierarchy matrix.</p>
+            <button id="clearCartRedirectAction" class="submit-order-trigger-btn" style="background:#FFF; color:#000;">
+                TERMINATE SESSION & RETURN HOME
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const activeCart = JSON.parse(localStorage.getItem('aion_cart')) || [];
+if (activeCart.length === 0) {
+    window.location.href = 'index.html';
+}
+        let selectedPaymentChannel = 'cod-panel';
+        let systemCalculatedCart = [];
+
+        // --- RENDER CHECKOUT INVENTORY SUMMARY ---
+        function renderCheckoutManifestSummary() {
+            const container = document.getElementById('checkoutItemsContainer');
+            systemCalculatedCart = JSON.parse(localStorage.getItem('aion_cart')) || [];
+
+            if (!container) return;
+
+            if (systemCalculatedCart.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; font-family:var(--font-mono); text-align:center; padding:20px 0;">MANIFEST VECTOR EMPTY</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            let subtotalAccumulator = 0;
+
+            systemCalculatedCart.forEach(item => {
+                subtotalAccumulator += (item.price * item.quantity);
+                const traceImageSrc = item.img || item.image || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500';
+
+                const rowNode = document.createElement('div');
+                rowNode.style.display = 'flex';
+                rowNode.style.gap = '15px';
+                rowNode.style.alignItems = 'center';
+                rowNode.style.marginBottom = '15px';
+                rowNode.style.paddingBottom = '15px';
+                rowNode.style.borderBottom = '1px solid var(--border-muted)';
+
+                rowNode.innerHTML = `
+                    <img src="${traceImageSrc}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid var(--border-muted); background: var(--surface-accent);">
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 0.8rem; color: var(--text-primary); font-weight: 500; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${item.name}</h4>
+                        <p style="font-size: 0.75rem; color: var(--text-secondary); font-family: var(--font-mono);">QTY: ${item.quantity} × Rs. ${item.price.toLocaleString()}</p>
+                    </div>
+                    <span style="font-size: 0.85rem; font-family: var(--font-mono); font-weight: 600; color: var(--text-primary);">Rs. ${(item.price * item.quantity).toLocaleString()}</span>
+                `;
+                container.appendChild(rowNode);
+            });
+
+            const shippingCost = 250;
+            const absoluteGrandTotal = subtotalAccumulator + shippingCost;
+
+            document.getElementById('summarySubtotal').innerText = `Rs. ${subtotalAccumulator.toLocaleString()}`;
+            document.getElementById('summaryGrandTotal').innerText = `Rs. ${absoluteGrandTotal.toLocaleString()}`;
+        }
+
+        // Tab selection matrix control algorithm
+        function switchPaymentChannel(targetPanelId) {
+            selectedPaymentChannel = targetPanelId;
+            
+            document.querySelectorAll('.payment-content-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.querySelectorAll('.matrix-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(targetPanelId).classList.add('active');
+            
+            const targetIndexMap = { 'cod-panel': 1, 'mobile-wallet-panel': 2, 'whatsapp-panel': 3 };
+            const index = targetIndexMap[targetPanelId];
+            document.querySelector(`.payment-matrix-tabs .matrix-tab-btn:nth-child(${index})`).classList.add('active');
+
+            const coreBtnText = document.getElementById('btnActionText');
+            if (targetPanelId === 'whatsapp-panel') {
+                coreBtnText.innerText = "REDIRECT AND CONCLUDE VIA WHATSAPP";
+            } else {
+                coreBtnText.innerText = "CONFIRM SYSTEM ORDER ARRANGEMENT";
+            }
+        }
+
+        function executeSystemFormValidation() {
+            document.getElementById('hiddenFormSubmitElement').click();
+        }
+
+        // --- CORE LOCAL PROFILE STORAGE SYNC MATRIX ---
+        // Generates the accurate architecture payload format parsed directly by profile.html
+        function saveOrderToLocalHistory(paymentMethodLabel) {
+            if (systemCalculatedCart.length === 0) return;
+
+            let subtotalAccumulator = systemCalculatedCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const totalCostWithShipping = subtotalAccumulator + 250;
+
+            const trackingID = Math.floor(100000 + Math.random() * 900000); 
+            const formattedDate = new Date().toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            const structuralOrderRecord = {
+                orderID: trackingID.toString(),
+                date: formattedDate,
+                items: systemCalculatedCart.map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                totalCost: totalCostWithShipping,
+                statusText: paymentMethodLabel === 'WHATSAPP' ? 'WHATSAPP ORDER' : 'PROCESSING'
+            };
+
+            // Pull current logs terminal array, prepend incoming data packet, commit back to ledger
+            let existingHistoryLedger = JSON.parse(localStorage.getItem('aion_orders')) || [];
+            existingHistoryLedger.unshift(structuralOrderRecord);
+            localStorage.setItem('aion_orders', JSON.stringify(existingHistoryLedger));
+        }
+
+        // Execution pipeline handler processing logic
+        function handleOrderSubmission(event) {
+            event.preventDefault();
+
+            const clientName = `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`;
+            const clientPhone = document.getElementById('phoneNumber').value;
+
+            if (selectedPaymentChannel === 'whatsapp-panel') {
+                transmitManifestToWhatsAppChannel('Checkout Router Matrix Request');
+                return;
+            }
+
+            // Save order straight into local system storage before showing success confirmation panel
+            const currentMethodLabel = selectedPaymentChannel === 'cod-panel' ? 'COD' : 'MOBILE WALLET';
+            saveOrderToLocalHistory(currentMethodLabel);
+
+            // UI feedback cycles 
+            const spinner = document.getElementById('btnProcessingSpinner');
+            const actionText = document.getElementById('btnActionText');
+            
+            if(spinner) spinner.style.display = 'block';
+            if(actionText) actionText.innerText = "COMPILING TRANSACTION LOGS...";
+
+            setTimeout(() => {
+                if(spinner) spinner.style.display = 'none';
+                
+                const successMsgNode = document.getElementById('successScreenMessage');
+                if(selectedPaymentChannel === 'cod-panel') {
+                    successMsgNode.innerText = `Thank you ${clientName}. Your Cash on Delivery order manifest has been registered. Our logistics dispatch unit will call or message your terminal code (${clientPhone}) shortly to confirm shipment authorization details.`;
+                } else {
+                    const referenceId = document.getElementById('transactionId').value || 'N/A';
+                    successMsgNode.innerText = `Thank you ${clientName}. Your Mobile Wallet ledger transfer tracking index reference (${referenceId}) is loaded into the auditing matrix queue list for verification validation sweeps.`;
+                }
+
+                document.getElementById('successScreenMatrix').classList.add('active');
+            }, 1400);
+        }
+
+        // --- DIRECT DYNAMIC WHATSAPP SYSTEM MANIFEST DISPATCH MATRIX ---
+        function transmitManifestToWhatsAppChannel(routingOriginContext) {
+            const SYSTEM_WHATSAPP_NUMBER = "923001234567"; // Set your corporate WhatsApp node here
+
+            const firstName = document.getElementById('firstName').value.trim() || "Unspecified";
+            const lastName = document.getElementById('lastName').value.trim() || "Profile";
+            const phone = document.getElementById('phoneNumber').value.trim() || "No Terminal Phone Given";
+            const email = document.getElementById('emailAddress').value.trim() || "N/A";
+            const address = document.getElementById('shippingAddress').value.trim() || "No Address Metadata";
+            const city = document.getElementById('deliveryCity').value.trim() || "No City Metadata";
+
+            if (systemCalculatedCart.length === 0) {
+                alert("Core Error: Your item compilation registry array index tracking stack contains 0 assets.");
+                return;
+            }
+
+            // Save order into profile dashboard registry even when passing routing to raw WhatsApp strings
+            saveOrderToLocalHistory('WHATSAPP');
+
+            let textManifestStream = `⚡ AION OPERATIONAL ORDER MANIFEST ⚡\n`;
+            textManifestStream += `===================================\n`;
+            textManifestStream += `▶ ROUTER ORIGIN: ${routingOriginContext.toUpperCase()}\n`;
+            textManifestStream += `▶ SETTLEMENT LAYER: ${selectedPaymentChannel.replace('-panel','').toUpperCase()}\n\n`;
+            textManifestStream += `👥 CUSTOMER INFORMATION PROFILE:\n`;
+            textManifestStream += `• Name: ${firstName} ${lastName}\n`;
+            textManifestStream += `• Phone Ref: ${phone}\n`;
+            textManifestStream += `• Email Node: ${email}\n`;
+            textManifestStream += `• Destination: ${address}, ${city}\n\n`;
+            textManifestStream += `📦 COMPILED INVENTORY ITEM LOGS:\n`;
+
+            let cumulativeTotal = 0;
+            systemCalculatedCart.forEach((item, idx) => {
+                const rowPrice = item.price * item.quantity;
+                cumulativeTotal += rowPrice;
+                textManifestStream += `  [0${idx + 1}] ${item.name}\n`;
+                textManifestStream += `       QTY: ${item.quantity} × Rs. ${item.price.toLocaleString()} -> Sub: Rs. ${rowPrice.toLocaleString()}\n`;
+            });
+
+            const shippingCharge = 250;
+            const completeTotalBalance = cumulativeTotal + shippingCharge;
+
+            textManifestStream += `\n-----------------------------------\n`;
+            textManifestStream += `💰 INVENTORY VALUE: Rs. ${cumulativeTotal.toLocaleString()}\n`;
+            textManifestStream += `🚚 SHIELD LOGISTICS: Rs. ${shippingCharge.toLocaleString()}\n`;
+            textManifestStream += ` TOTAL RECEIVABLE BALANCE: Rs. ${completeTotalBalance.toLocaleString()}\n`;
+            textManifestStream += `===================================\n`;
+            textManifestStream += `🤖 [Operational Query: Requesting secure validation processing and verification confirmation checks from system administration.]`;
+
+            const encodedMatrixUrlString = `https://wa.me/${SYSTEM_WHATSAPP_NUMBER}?text=${encodeURIComponent(textManifestStream)}`;
+            
+            window.open(encodedMatrixUrlString, '_blank');
+
+            if (selectedPaymentChannel === 'whatsapp-panel') {
+                localStorage.removeItem('aion_cart');
+                window.location.href = "index.html";
+            }
+        }
+
+        // Clean active cart storage when exiting the checkout framework flow controls
+        document.getElementById('clearCartRedirectAction').addEventListener('click', () => {
+            localStorage.removeItem('aion_cart');
+            window.location.href = 'index.html';
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCheckoutManifestSummary();
+            
+            const savedPfpData = localStorage.getItem('aion_user_pfp');
+            if (savedPfpData && document.getElementById('headerNavAvatar')) {
+                const node = document.getElementById('headerNavAvatar');
+                node.style.backgroundImage = `url('${savedPfpData}')`;
+                if(document.getElementById('headerNavIcon')) document.getElementById('headerNavIcon').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

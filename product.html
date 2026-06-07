@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Display — AION</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- Core Cyber-Editorial Monochromatic Palette --- */
+        :root {
+            --primary-color: #FFFFFF;        
+            --primary-hover: #E4E4E7;        
+            --accent-color: #FFFFFF;         
+            --bg-light: #0A0A0C;             
+            --bg-white: #121214;             
+            --text-dark: #FFFFFF;            
+            --text-gray: #A1A1AA;            
+            --border-muted: #27272A;
+            --surface-accent: #1A1A1E;
+            --font-main: 'Poppins', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            letter-spacing: -0.01em;
+        }
+
+        /* --- Header Navigation Navigation --- */
+        header {
+            border-bottom: 1px solid var(--border-muted);
+            background: rgba(10, 10, 12, 0.8);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand-logo {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- Global Autocomplete Search Engine Panel --- */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 15px;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .global-search-input {
+            width: 100%;
+            padding: 10px 15px 10px 45px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-muted);
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .global-search-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: var(--bg-white);
+            border: 1px solid var(--border-muted);
+            margin-top: 5px;
+            display: none;
+            max-height: 320px;
+            overflow-y: auto;
+            z-index: 1100;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-bottom: 1px solid var(--border-muted);
+            transition: background 0.15s ease;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background: var(--surface-accent);
+        }
+
+        .suggestion-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border: 1px solid var(--border-muted);
+        }
+
+        .suggestion-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .suggestion-name {
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .suggestion-price {
+            color: var(--text-gray);
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+        }
+
+        /* --- Right Utility Actions --- */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .action-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            position: relative;
+            font-size: 1.1rem;
+            transition: opacity 0.2s ease;
+        }
+
+        .action-link:hover {
+            opacity: 0.8;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -7px;
+            right: -10px;
+            background: var(--primary-color);
+            color: var(--bg-light);
+            font-size: 0.65rem;
+            font-weight: 700;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+        }
+
+        .avatar-frame {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border-muted);
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* --- Product Interface Context Grid --- */
+        main {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 25px;
+        }
+
+        .product-grid-matrix {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        /* Left Display Vector */
+        .display-gallery-vector {
+            position: relative;
+            border: 1px solid var(--border-muted);
+            background: var(--bg-white);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .display-gallery-vector img {
+            width: 100%;
+            max-height: 550px;
+            object-fit: cover;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .display-gallery-vector:hover img {
+            transform: scale(1.02);
+        }
+
+        /* Right Meta Details Parameters */
+        .meta-details-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .technical-breadcrumbs {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .product-title-node {
+            font-size: 2.2rem;
+            font-weight: 600;
+            line-height: 1.15;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            letter-spacing: -0.02em;
+        }
+
+        .price-readout-strip {
+            font-family: var(--font-mono);
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-muted);
+        }
+
+        .description-paragraph {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            line-height: 1.6;
+            margin-bottom: 35px;
+        }
+
+        /* Technical Sizing Elements */
+        .variant-selector-cluster {
+            margin-bottom: 35px;
+        }
+
+        .variant-heading {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .size-button-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .size-node-btn {
+            background: transparent;
+            border: 1px solid var(--border-muted);
+            color: var(--text-dark);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .size-node-btn:hover {
+            border-color: var(--primary-color);
+        }
+
+        .size-node-btn.active {
+            background: var(--primary-color);
+            color: var(--bg-light);
+            border-color: var(--primary-color);
+        }
+
+        /* Actions Elements */
+        .manifest-action-trigger {
+            width: 100%;
+            background: var(--primary-color);
+            color: var(--bg-light);
+            border: 1px solid var(--primary-color);
+            padding: 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .manifest-action-trigger:hover {
+            background: transparent;
+            color: var(--primary-color);
+        }
+
+        .manifest-action-trigger:active {
+            transform: scale(0.99);
+        }
+
+        /* --- Footer Matrix --- */
+        footer {
+            margin-top: 120px;
+            border-top: 1px solid var(--border-muted);
+            padding: 40px 25px;
+            text-align: center;
+            background: #020203;
+        }
+
+        footer p {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- Responsive Matrix Layout Overrides --- */
+        @media (max-width: 900px) {
+            .product-grid-matrix {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            main {
+                margin: 30px auto;
+            }
+            .product-title-node {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="brand-logo">Aion</a>
+            
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="globalSearchInput" class="global-search-input" placeholder="SEARCH OPERATIONAL REGISTRY...">
+                </div>
+                <div id="searchSuggestions" class="search-suggestions"></div>
+            </div>
+
+            <div class="nav-actions">
+                <a href="cart.html" class="action-link">
+                    <i class="fa-solid fa-square-nfi" style="display:none;"></i> <i class="fa-solid fa-bag-shopping"></i>
+                    <span id="cart-count" class="cart-badge">0</span>
+                </a>
+                <a href="profile.html" class="action-link">
+                    <div id="headerNavAvatar" class="avatar-frame">
+                        <i id="headerNavIcon" class="fa-solid fa-terminal" style="font-size: 0.8rem;"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="product-grid-matrix">
+            
+            <div class="display-gallery-vector">
+                <img id="targetProductImage" src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600" alt="Loading Core Manifest Image...">
+            </div>
+
+            <div class="meta-details-column">
+                <div id="targetProductCategory" class="technical-breadcrumbs">SYSTEM CATALOG // REPLICANT MATRIX</div>
+                <h1 id="targetProductName" class="product-title-node">Loading Manifest Registry...</h1>
+                <div id="targetProductPrice" class="price-readout-strip">Rs. 0</div>
+                
+                <p class="description-paragraph">
+                    Engineered specification structured variant layout blueprint. Part of the core architecture data array platform tracking premium e-commerce interfaces. High-contrast monochromatic asset styling configuration details mapped out natively.
+                </p>
+
+                <div class="variant-selector-cluster">
+                    <div class="variant-heading">CONFIGURATION MATRIX SIZE</div>
+                    <div class="size-button-row">
+                        <button class="size-node-btn">S</button>
+                        <button class="size-node-btn active">M</button>
+                        <button class="size-node-btn">L</button>
+                        <button class="size-node-btn">XL</button>
+                    </div>
+                </div>
+
+                <button class="manifest-action-trigger" onclick="addActiveToCart()">
+                    ADD TO CART SPECIFICATION
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 AION OPERATIONAL RUNTIME CORE MATRIX SYSTEM ALL RIGHTS RESERVED.</p>
+    </footer>
+
+    <script src="search.js"></script>
+    <script>
+        let currentActiveProduct = null;
+
+        // --- FIX 2: REWRITTEN UNIFIED LIFE-CYCLE INVENTORY SEARCH ROUTINE ---
+        function initializeProductPageLifecycle() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            if (!productId) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Fallback crawling structures to dynamically fetch items written by any seller matrix format
+            const dynamicSellerProducts = JSON.parse(localStorage.getItem('seller_products')) || [];
+            const dynamicAionProducts = JSON.parse(localStorage.getItem('aion_products')) || [];
+            const genericStoredProducts = JSON.parse(localStorage.getItem('stored_products')) || [];
+            
+            // Merge global static arrays cleanly with all local storage formats
+            const masterUnifiedCatalogRegistry = [
+                ...(typeof SEARCH_INVENTORY !== 'undefined' ? SEARCH_INVENTORY : []),
+                ...dynamicSellerProducts,
+                ...dynamicAionProducts,
+                ...genericStoredProducts
+            ];
+
+            // Deep crawl matching index arrays dynamically
+            currentActiveProduct = masterUnifiedCatalogRegistry.find(product => 
+                product && product.id && product.id.toString() === productId.toString()
+            );
+
+            if (currentActiveProduct) {
+                renderProductDataToView(currentActiveProduct);
+            } else {
+                console.error("Critical Runtime Warning: Index target pointer reference missing from matrix lists.");
+                document.getElementById('targetProductName').innerText = "REGISTRY TRACE EXPIRED";
+                document.getElementById('targetProductPrice').innerText = "N/A";
+            }
+
+            setupSearchEngineCore();
+        }
+
+        function renderProductDataToView(product) {
+            // Map either img or image reliably
+            const validImgUrl = product.img || product.image || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600';
+            
+            document.getElementById('targetProductName').innerText = product.name;
+            document.getElementById('targetProductPrice').innerText = `Rs. ${product.price.toLocaleString()}`;
+            document.getElementById('targetProductImage').src = validImgUrl;
+            document.getElementById('targetProductImage').alt = product.name;
+
+            if (product.isSellerProduct || product.id.toString().includes('custom')) {
+                document.getElementById('targetProductCategory').innerText = "USER MARKETPLACE // EXTERNAL SELLER MANIFEST";
+            }
+        }
+
+        // --- FIX 1: RIGID PAYLOAD STRUCTURING ENGINE ---
+        function addActiveToCart() {
+            if (!currentActiveProduct) return;
+            
+            let cart = JSON.parse(localStorage.getItem('aion_cart')) || [];
+            const existing = cart.find(item => item.id.toString() === currentActiveProduct.id.toString());
+            
+            // Extract a valid, clean image property matching what checkout rendering loops expect
+            const targetImagePayload = currentActiveProduct.img || currentActiveProduct.image || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500';
+
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({
+                    id: currentActiveProduct.id,
+                    name: currentActiveProduct.name,
+                    price: currentActiveProduct.price,
+                    img: targetImagePayload, // CRITICAL FIX: explicitly mapped as 'img' for checkout.html images
+                    quantity: 1
+                });
+            }
+            
+            localStorage.setItem('aion_cart', JSON.stringify(cart));
+            syncGlobalHeaderComponents();
+        }
+
+        // --- GLOBAL DESIGN COMPONENT INTERACTION METRICS ---
+        function syncGlobalHeaderComponents() {
+            // Render Profile Picture Uniformly Across Terminals
+            const savedPfp = localStorage.getItem('aion_user_pfp');
+            const headerNavAvatar = document.getElementById('headerNavAvatar');
+            const headerNavIcon = document.getElementById('headerNavIcon');
+
+            if (savedPfp && headerNavAvatar) {
+                headerNavAvatar.style.backgroundImage = `url('${savedPfp}')`;
+                headerNavAvatar.style.backgroundSize = 'cover';
+                headerNavAvatar.style.backgroundPosition = 'center';
+                if (headerNavIcon) headerNavIcon.style.display = 'none';
+            }
+
+            // Sync Cart Count Badges
+            const cart = JSON.parse(localStorage.getItem('aion_cart')) || [];
+            const cartCountBadge = document.getElementById('cart-count');
+            if (cartCountBadge) {
+                cartCountBadge.innerText = cart.reduce((sum, item) => sum + item.quantity, 0);
+            }
+        }
+
+        // Localized search script overlay controller
+        function setupSearchEngineCore() {
+            const searchInput = document.getElementById('globalSearchInput');
+            const searchSuggestions = document.getElementById('searchSuggestions');
+            
+            if (!searchInput || !searchSuggestions) return;
+
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.trim().toLowerCase();
+                if (query.length === 0) {
+                    searchSuggestions.style.display = 'none';
+                    return;
+                }
+
+                const dynamicSellerProducts = JSON.parse(localStorage.getItem('seller_products')) || [];
+                const fullSearchRegistry = [
+                    ...(typeof SEARCH_INVENTORY !== 'undefined' ? SEARCH_INVENTORY : []),
+                    ...dynamicSellerProducts
+                ];
+
+                const filtered = fullSearchRegistry.filter(p => p && p.name && p.name.toLowerCase().includes(query));
+
+                if (filtered.length > 0) {
+                    searchSuggestions.innerHTML = '';
+                    filtered.slice(0, 6).forEach(item => {
+                        const row = document.createElement('a');
+                        row.href = `product.html?id=${item.id}`;
+                        row.className = 'suggestion-item';
+                        row.innerHTML = `
+                            <img src="${item.img || item.image || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500'}" alt="${item.name}">
+                            <div class="suggestion-info">
+                                <span class="suggestion-name">${item.name}</span>
+                                <span class="suggestion-price">Rs. ${item.price.toLocaleString()}</span>
+                            </div>
+                        `;
+                        searchSuggestions.appendChild(row);
+                    });
+                    searchSuggestions.style.display = 'block';
+                } else {
+                    searchSuggestions.innerHTML = `
+                        <div class="suggestion-item" style="cursor: default; pointer-events: none; color: var(--text-gray);">
+                            <div class="suggestion-info">
+                                <span class="suggestion-name">No premium matches found</span>
+                            </div>
+                        </div>
+                    `;
+                    searchSuggestions.style.display = 'block';
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-container')) {
+                    searchSuggestions.style.display = 'none';
+                }
+            });
+        }
+
+        // Size Button Selector Click Micro-Interactions
+        document.querySelectorAll('.size-node-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.size-node-btn').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeProductPageLifecycle();
+            syncGlobalHeaderComponents();
+        });
+    </script>
+    <script src="search.js"></script>
+
+    <script>
+        // Sync header avatars, counts, and populate your grids here safely
+        function syncGlobalHeaderComponents() {
+            const savedPfp = localStorage.getItem('aion_user_pfp');
+            const headerNavAvatar = document.getElementById('headerNavAvatar');
+            if (savedPfp && headerNavAvatar) {
+                headerNavAvatar.style.backgroundImage = `url('${savedPfp}')`;
+                headerNavAvatar.style.backgroundSize = 'cover';
+            }
+            
+            const cart = JSON.parse(localStorage.getItem('aion_cart')) || [];
+            const cartCountBadge = document.getElementById('cart-count');
+            if (cartCountBadge) {
+                cartCountBadge.innerText = cart.reduce((sum, item) => sum + item.quantity, 0);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Now safely runs because search.js was parsed above
+            if (typeof populateMainProductGrid === 'function') {
+                populateMainProductGrid();
+            }
+            syncGlobalHeaderComponents();
+        });
+    </script>
+</body>
+</html>

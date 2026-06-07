@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart — AION</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- Brand Color Palette (Cyber-Editorial Monochromatic) --- */
+        :root {
+            --primary-color: #FFFFFF;        /* Crisp high-contrast white elements */
+            --primary-hover: #E4E4E7;        /* Subtle off-white for interactions */
+            --accent-color: #FFFFFF;         /* Clean and monochromatic */
+            --bg-light: #0A0A0C;             /* True deep background */
+            --bg-white: #121214;             /* Surface panels instead of white blocks */
+            --text-dark: #FFFFFF;            /* All primary text inverted to white */
+            --text-gray: #A1A1AA;            /* Secondary muted text */
+            --border-muted: #27272A;         /* Structural layout frames */
+            --border-focus: #FFFFFF;         /* Interactive elements highlight */
+            --font-main: 'Poppins', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* --- GLOBAL NAVIGATION HEADER --- */
+        header {
+            background-color: var(--bg-light);
+            border-bottom: 1px solid var(--border-muted);
+            padding: 15px 4%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-area a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .search-container {
+            position: relative;
+            width: 40%;
+            max-width: 500px;
+        }
+
+        .search-bar-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar-wrapper i {
+            position: absolute;
+            left: 15px;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .global-search-input {
+            width: 100%;
+            background: var(--bg-white);
+            border: 1px solid var(--border-muted);
+            padding: 10px 15px 10px 45px;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .global-search-input:focus {
+            border-color: var(--border-focus);
+        }
+
+        .search-suggestions-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-white);
+            border: 1px solid var(--border-muted);
+            border-top: none;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1100;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-bottom: 1px solid var(--border-muted);
+            transition: background 0.2s ease;
+        }
+
+        .suggestion-item:hover {
+            background: #1A1A1E;
+        }
+
+        .right-nav-utilities {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-link-item {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link-item:hover {
+            color: var(--primary-color);
+        }
+
+        .cart-trigger-node {
+            position: relative;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            text-decoration: none;
+        }
+
+        .cart-counter-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--primary-color);
+            color: var(--bg-light);
+            font-size: 0.65rem;
+            font-weight: 700;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-terminal-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            text-decoration: none;
+            background-size: cover;
+            background-position: center;
+            transition: border-color 0.2s ease;
+        }
+
+        .user-terminal-avatar:hover {
+            border-color: var(--border-focus);
+        }
+
+        /* --- MAIN LAYOUT HUB --- */
+        main {
+            flex: 1;
+            padding: 40px 4%;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            border-left: 3px solid var(--primary-color);
+            padding-left: 15px;
+        }
+
+        .cart-layout-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* Left Side: Items Stack */
+        .cart-items-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .cart-item-row {
+            background-color: var(--bg-white);
+            border: 1px solid var(--border-muted);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            transition: border-color 0.2s ease;
+        }
+
+        .cart-item-row:hover {
+            border-color: #3f3f46;
+        }
+
+        .item-details-block {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .item-thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            background: #1A1A1E;
+            border: 1px solid var(--border-muted);
+        }
+
+        .item-meta-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .item-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .item-seller-badge {
+            font-size: 0.7rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: #1A1A1E;
+            padding: 2px 6px;
+            width: max-content;
+            border: 1px solid var(--border-muted);
+        }
+
+        .item-unit-cost {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        /* Control Nodes */
+        .quantity-controller-hub {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-muted);
+            background: var(--bg-light);
+        }
+
+        .quantity-modifier-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-dark);
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .quantity-modifier-btn:hover {
+            background: var(--border-muted);
+        }
+
+        .quantity-value-display {
+            width: 40px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .item-total-cost-display {
+            font-size: 1rem;
+            font-weight: 700;
+            min-width: 110px;
+            text-align: right;
+        }
+
+        .item-eviction-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-gray);
+            cursor: pointer;
+            padding: 8px;
+            font-size: 1rem;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .item-eviction-btn:hover {
+            color: #EF4444;
+            transform: scale(1.05);
+        }
+
+        /* Right Side: Order Summary Deck */
+        .order-summary-deck {
+            background-color: var(--bg-white);
+            border: 1px solid var(--border-muted);
+            padding: 25px;
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-muted);
+            padding-bottom: 15px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: var(--text-gray);
+        }
+
+        .summary-row.grand-total {
+            border-top: 1px solid var(--border-muted);
+            margin-top: 20px;
+            padding-top: 20px;
+            color: var(--text-dark);
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .checkout-action-trigger {
+            width: 100%;
+            background: var(--primary-color);
+            color: var(--bg-light);
+            border: 1px solid var(--primary-color);
+            padding: 15px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .checkout-action-trigger:hover {
+            background: transparent;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .continue-shopping-anchor {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 0.85rem;
+            margin-top: 20px;
+            transition: color 0.2s ease;
+        }
+
+        .continue-shopping-anchor:hover {
+            color: var(--primary-color);
+        }
+
+        /* --- EMPTY STATE CONTEXT --- */
+        .empty-cart-fallback {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-muted);
+            display: none;
+        }
+
+        .empty-cart-fallback i {
+            font-size: 3rem;
+            color: var(--border-muted);
+            margin-bottom: 20px;
+        }
+
+        .empty-cart-fallback p {
+            color: var(--text-gray);
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        /* Responsive Flow Controls */
+        @media (max-width: 992px) {
+            .cart-layout-grid {
+                grid-template-columns: 1fr;
+            }
+            .order-summary-deck {
+                position: static;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cart-item-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .item-total-cost-display {
+                text-align: left;
+                min-width: auto;
+            }
+            .search-container {
+                display: none; /* Hide complex filter bar on mobile navigation stacks */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <a href="index.html">Aion</a>
+        </div>
+
+        <div class="search-container">
+            <div class="search-bar-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" class="global-search-input" placeholder="Search architecture inventory...">
+            </div>
+            <div id="searchSuggestions" class="search-suggestions-box"></div>
+        </div>
+
+        <div class="right-nav-utilities">
+            <a href="profile.html" class="nav-link-item">Terminal</a>
+            <a href="cart.html" class="cart-trigger-node">
+                <i class="fa-solid fa-square-envelope" style="display:none;"></i> <i class="fa-solid fa-bag-shopping"></i>
+                <span id="cart-count" class="cart-counter-badge">0</span>
+            </a>
+            <a href="profile.html" id="headerNavAvatar" class="user-terminal-avatar">
+                <i class="fa-solid fa-user-astronaut" id="headerNavIcon"></i>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <h1 class="page-title">Operational Cart Manifest</h1>
+
+        <div class="cart-layout-grid" id="cartContentWrapper">
+            <div class="cart-items-container" id="cartItemsContainer">
+                </div>
+
+            <div class="order-summary-deck">
+                <h2 class="summary-header">Ledger Summary</h2>
+                <div class="summary-row">
+                    <span>Total Manifest Items</span>
+                    <span id="summary-items-qty">0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="summary-subtotal">Rs. 0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Logistics / Platform Handling</span>
+                    <span style="color: #22C55E; font-weight: 500;">FREE</span>
+                </div>
+                <div class="summary-row grand-total">
+                    <span>Grand Total</span>
+                    <span id="summary-grand-total">Rs. 0</span>
+                </div>
+
+                <button class="checkout-action-trigger" id="checkoutTriggerBtn">
+                    Proceed to Verification <i class="fa-solid fa-arrow-right-long"></i>
+                </button>
+
+                <a href="index.html" class="continue-shopping-anchor">
+                    <i class="fa-solid fa-arrow-left-long"></i> Continue Catalog Navigation
+                </a>
+            </div>
+        </div>
+
+        <div class="empty-cart-fallback" id="emptyCartFallback">
+            <i class="fa-solid fa-box-open"></i>
+            <h2>Manifest Matrix Empty</h2>
+            <p>No active standard stock or seller customized units detected in system runtime memory.</p>
+            <a href="index.html" class="checkout-action-trigger" style="display: inline-flex; width: auto; padding: 12px 30px; text-decoration: none;">
+                Browse Catalog
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Universal runtime state variable extraction
+        let cart = JSON.parse(localStorage.getItem('aion_cart')) || [];
+
+        const cartItemsContainer = document.getElementById('cartItemsContainer');
+        const cartContentWrapper = document.getElementById('cartContentWrapper');
+        const emptyCartFallback = document.getElementById('emptyCartFallback');
+
+        const summaryItemsQty = document.getElementById('summary-items-qty');
+        const summarySubtotal = document.getElementById('summary-subtotal');
+        const summaryGrandTotal = document.getElementById('summary-grand-total');
+        const checkoutTriggerBtn = document.getElementById('checkoutTriggerBtn');
+
+        /**
+         * Parses and evaluates structural layout items inside the runtime stack
+         */
+        function renderCartManifest() {
+            if (cart.length === 0) {
+                cartContentWrapper.style.display = 'none';
+                emptyCartFallback.style.display = 'block';
+                return;
+            }
+
+            cartContentWrapper.style.display = 'grid';
+            emptyCartFallback.style.display = 'none';
+            cartItemsContainer.innerHTML = '';
+
+            cart.forEach((item, index) => {
+                const itemTotalPrice = item.price * item.quantity;
+                const isSellerItem = item.id.toString().startsWith('custom_') || item.isSellerProduct;
+
+                const itemRow = document.createElement('div');
+                itemRow.className = 'cart-item-row';
+                itemRow.innerHTML = `
+                    <div class="item-details-block">
+                        <img src="${item.img || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500'}" class="item-thumbnail" alt="${item.name}">
+                        <div class="item-meta-info">
+                            <span class="item-title">${item.name}</span>
+                            ${isSellerItem ? `<span class="item-seller-badge">Seller Unit</span>` : `<span class="item-seller-badge" style="background:#0F172A; border-color:#334155;">AION Prime</span>`}
+                            <span class="item-unit-cost">Rs. ${item.price.toLocaleString()}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="quantity-controller-hub">
+                        <button class="quantity-modifier-btn" onclick="modifyItemQuantity(${index}, -1)">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <span class="quantity-value-display">${item.quantity}</span>
+                        <button class="quantity-modifier-btn" onclick="modifyItemQuantity(${index}, 1)">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+
+                    <div class="item-total-cost-display">
+                        Rs. ${itemTotalPrice.toLocaleString()}
+                    </div>
+
+                    <button class="item-eviction-btn" onclick="evictManifestItem(${index})" title="Remove item">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                cartItemsContainer.appendChild(itemRow);
+            });
+        }
+
+        /**
+         * Calculates system computational totals and updates UI string tokens
+         */
+        function recalculateSystemTotals() {
+            const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const subtotalValue = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            if (summaryItemsQty) summaryItemsQty.innerText = totalQty;
+            if (summarySubtotal) summarySubtotal.innerText = `Rs. ${subtotalValue.toLocaleString()}`;
+            if (summaryGrandTotal) summaryGrandTotal.innerText = `Rs. ${subtotalValue.toLocaleString()}`;
+            
+            // Sync dynamic counters instantly to top bar node frame
+            const topBarBadge = document.getElementById('cart-count');
+            if (topBarBadge) topBarBadge.innerText = totalQty;
+        }
+
+        /**
+         * Modifies item quantity index limits dynamically
+         */
+        window.modifyItemQuantity = function(index, directionalVector) {
+            cart[index].quantity += directionalVector;
+
+            if (cart[index].quantity <= 0) {
+                evictManifestItem(index);
+                return;
+            }
+
+            commitCartStateAndSync();
+        };
+
+        /**
+         * Completely evicts an individual array index item from database local stack
+         */
+        window.evictManifestItem = function(index) {
+            cart.splice(index, 1);
+            commitCartStateAndSync();
+        };
+
+        /**
+         * Writes dynamic updates out to disk cluster state engines
+         */
+        function commitCartStateAndSync() {
+            localStorage.setItem('aion_cart', JSON.stringify(cart));
+            // Sync fallback mirroring parameters for classic verification pages 
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            renderCartManifest();
+            recalculateSystemTotals();
+        }
+
+        /**
+         * Global operational synchronization context processing modules
+         */
+        function syncGlobalHeaderComponents() {
+            const savedPfp = localStorage.getItem('aion_user_pfp');
+            const headerNavAvatar = document.getElementById('headerNavAvatar');
+            const headerNavIcon = document.getElementById('headerNavIcon');
+
+            if (savedPfp && headerNavAvatar) {
+                headerNavAvatar.style.backgroundImage = `url('${savedPfp}')`;
+                headerNavAvatar.style.backgroundSize = 'cover';
+                headerNavAvatar.style.backgroundPosition = 'center';
+                if (headerNavIcon) headerNavIcon.style.display = 'none';
+            }
+        }
+
+        // Assign pipeline triggers to secure verification routes
+      // AFTER FIXING (cart.html):
+checkoutTriggerBtn.addEventListener('click', () => {
+    if(cart.length === 0) return;
+    // Changed 'cart' to 'aion_cart' to match the rest of the application ecosystem
+    localStorage.setItem('aion_cart', JSON.stringify(cart)); 
+    window.location.href = 'checkout.html';
+});
+
+        // Initialize Runtime Matrix Loops on structural generation cycle trigger
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCartManifest();
+            recalculateSystemTotals();
+            syncGlobalHeaderComponents();
+        });
+    </script>
+    
+    <script src="search.js"></script>
+
+    <script>
+        // Sync header avatars, counts, and populate your grids here safely
+        function syncGlobalHeaderComponents() {
+            const savedPfp = localStorage.getItem('aion_user_pfp');
+            const headerNavAvatar = document.getElementById('headerNavAvatar');
+            if (savedPfp && headerNavAvatar) {
+                headerNavAvatar.style.backgroundImage = `url('${savedPfp}')`;
+                headerNavAvatar.style.backgroundSize = 'cover';
+            }
+            
+            const cart = JSON.parse(localStorage.getItem('aion_cart')) || [];
+            const cartCountBadge = document.getElementById('cart-count');
+            if (cartCountBadge) {
+                cartCountBadge.innerText = cart.reduce((sum, item) => sum + item.quantity, 0);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Now safely runs because search.js was parsed above
+            if (typeof populateMainProductGrid === 'function') {
+                populateMainProductGrid();
+            }
+            syncGlobalHeaderComponents();
+        });
+    </script>
+</body>
+</html>
